@@ -1,49 +1,101 @@
 <!DOCTYPE html>
 <html lang="ko">
-	<link rel="stylesheet" href="style.css">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My resume</title>
+    <title>챗봇</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .chatbox {
+            max-height: 400px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+        .input-area {
+            display: flex;
+        }
+        .input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .input-area button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-area button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <header id="header">
-        <!-- 이력서 헤더 : 이름과 타이틀 작성 -->
-        <h1>김동혁</h1>
-        <hr>
-        학생
-        <hr>
-      </header>
-      
-      <main>
-        <article id="mainLeft">
-          <section>
-            <h2>CONTACT</h2>
-            <p>
-                <a href="mailto:gg7536@gmail.com">gg7536@gmail.com</a>
-            </p>
-          </section>
-          <section>
-            <h2>SKILLS</h2>
-          <p>HTML,CSS Javascript,VS Code,Git/GitHub</p>
-           </section>
-           <section>
-            <h2>EDUCATION</h2>
-            <p>경북대학교-컴퓨터학부 전공(-2023)</p>
-            <p>계성고등학교(-2016)</p>
-          </section>            
-        </article>
-        <article id="mainRight">
-          <section>
-           <h2>ABOUT</h2>
-         <p>INTJ</p>
-         <p>사람 많은거 선호</p>
-          </section>
-          <section>
-            <h2>WORK EXPERIENCE</h2>
-            
-          </section>
-        </article>
-      </main>
+
+    <div class="chat-container">
+        <h2>챗봇</h2>
+        <div class="chatbox" id="chatbox">
+            <!-- 챗봇 대화 내용이 여기에 표시됩니다 -->
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="질문을 입력하세요..." />
+            <button onclick="sendMessage()">전송</button>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "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"; // OpenAI API 키를 여기에 입력
+
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput').value;
+            const chatbox = document.getElementById('chatbox');
+            if (userInput) {
+                // 사용자 메시지 추가
+                chatbox.innerHTML += `<p><strong>사용자:</strong> ${userInput}</p>`;
+
+                // OpenAI API 호출
+                const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: [{ role: "user", content: userInput }]
+                    })
+                });
+
+                const data = await response.json();
+                const chatbotResponse = data.choices[0].message.content;
+
+                // 챗봇 응답 추가
+                chatbox.innerHTML += `<p><strong>챗봇:</strong> ${chatbotResponse}</p>`;
+
+                // 입력 필드 초기화
+                document.getElementById('userInput').value = '';
+
+                // 스크롤을 최신 메시지로 이동
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+        }
+    </script>
+
 </body>
 </html>
